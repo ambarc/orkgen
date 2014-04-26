@@ -1,1 +1,5 @@
-console.log('javascript loaded');
+// javascript
+
+$(document).ready(function() {
+	console.log('javascript loaded');
+});
