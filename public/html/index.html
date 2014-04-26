@@ -66,9 +66,9 @@ var g = svg.append("g");
       .attr("id", "states")
     .selectAll("path")
       .data(topojson.feature(us, us.objects.states).features)
-      .attr("id", "" + stateId++)
     .enter().append("path")
       .attr("d", path)
+      .attr("id", "" + stateId++)
       .on("click", clicked);
 
   g.append("path")
@@ -94,8 +94,10 @@ function clicked(d) {
     centered = null;
   }
 
+
   g.selectAll("path")
-      .classed("active", centered && function(d) { return d === centered; });
+      .classed("active", centered && function(d) { return d === centered; })
+      .attr("text", "booya");
 
   g.transition()
       .duration(750)
