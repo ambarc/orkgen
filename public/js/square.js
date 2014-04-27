@@ -1,9 +1,4 @@
-// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
-var squares = [[0, "CALIFORNIA", "red", 87], 
-		[1, "TEXAS", "turquoise", 120],
-		[2, "NEWYORK", "orange", 95], 
-		[3, "WASHINGTON", "pink", 93]
-	];
+
 
 function getBoundingBox(d3Text) {
 	
@@ -13,16 +8,7 @@ function boxesIntersect(box1, box2) {
 
 }
 
-function placeGridInSquare(svg, squareElement, square) {
-		word = square[1];
-		squareX = squareElement.attr("x");
-		squareY = squareElement.attr("y");
-		squareWidth = squareElement.attr("width");
-		squareHeight = squareElement.attr("height");
-		letterCount = word.length;		
-		// TODO Make variable
-		fontSize = square[3];
-		
+function getHackBbox(svg, fontsize) {
 		// Hacky -- temporarily rendering a letter template to find it's rough fitting.
 		svg
 			.append("text")
@@ -36,7 +22,43 @@ function placeGridInSquare(svg, squareElement, square) {
 		console.log(test);
 		console.log(testBbox);
 		test.remove();
-	
+		return testBbox;
+}
+
+// TODO -- space available to fontsize conversion.
+// Potentially thresholded greedy space eaters.
+function maxCoverageInSquare(svg, squareElement, square) {
+	// Get basic building block -- total area divided by letter size.
+	// Aim for maximum coverage.
+	squareWidth = squareElement.attr("width")
+	squareHeight = squareElement.attr("height")
+
+	squareArea = parseInt(squareWidth) * parseInt(squareHeight)
+	word = square[1];
+	letterCount = word.length;
+	blockArea = parseInt(squareArea/letterCount);
+	// TODO Get the font associated for a letter to occupy this much area.
+	// Hack -- using 'M' as default.
+	// Coding this in for now -- will generate from blockSize
+	fontSize = square[3];
+	console.log("Letter Count is " + letterCount);
+	console.log("Square Width and height are : " + squareWidth + ", " + squareHeight)
+	console.log("Total Available Area is " + squareArea)
+	console.log("Single block Area is " + blockArea)
+	console.log("Block Cumulative Area is " + blockArea * letterCount)
+}
+
+function placeGridInSquare(svg, squareElement, square) {
+		word = square[1];
+		squareX = squareElement.attr("x");
+		squareY = squareElement.attr("y");
+		squareWidth = squareElement.attr("width");
+		squareHeight = squareElement.attr("height");
+		letterCount = word.length;		
+		// TODO Make variable
+		fontSize = square[3];
+		
+		testBbox = getHackBbox(svg, fontSize);	
 		charHeight = testBbox.height;
 		charWidth = testBbox.width;
 		// TODO -- font+area based intelligence here.
@@ -45,7 +67,7 @@ function placeGridInSquare(svg, squareElement, square) {
 		console.log(squareHeight + " " + charHeight);
 		colCount = parseInt(squareWidth/charWidth);
 		rowCount = parseInt(letterCount/colCount) + (letterCount % colCount > 0 ? 1 : 0);
-		padX = (squareWidth - colCount * charWidth) / 2;				
+		padX = 0;//(squareWidth - colCount * charWidth) / 4;				
 		console.log(padX);
 		index = 0;
 		for (j = 0; j < rowCount; j++) {
@@ -83,9 +105,13 @@ function placeGridInSquare(svg, squareElement, square) {
 
 var textElement;
 $(document).ready(function() {
+	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
+	var squares = [[0, "CALIFORNIA", "red", 87], 
+			[1, "TEXAS", "turquoise", 120],
+			[2, "NEWYORK", "orange", 98], 
+			[3, "WASHINGTON", "pink", 93]
+		];
 
-
-	
 	var width = 330;//($(window).width()/squares.length) - 5,
 		height = 330;
 
@@ -115,45 +141,8 @@ $(document).ready(function() {
 	for (i = 0; i < squares.length; i++) {
 		squareElement = $("#square"+i);
 		placeGridInSquare(svg, squareElement, squares[i]);
+		maxCoverageInSquare(svg, squareElement, squares[i]);
 	}	
 
-	function positionPath(path) {
-		path
-				.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
-	}
-
-	function intersects(circle, polygon) {
-		return pointInPolygon(circle, polygon)
-				|| polygonEdges(polygon).some(function(line) { return pointLineSegmentDistance(circle, line) < circle[2]; });
-	}
-
-	function polygonEdges(polygon) {
-		return polygon.map(function(p, i) {
-			return i ? [polygon[i - 1], p] : [polygon[polygon.length - 1], p];
-		});
-	}
-
-	function pointInPolygon(point, polygon) {
-		for (var n = polygon.length, i = 0, j = n - 1, x = point[0], y = point[1], inside = false; i < n; j = i++) {
-			var xi = polygon[i][0], yi = polygon[i][1],
-					xj = polygon[j][0], yj = polygon[j][1];
-			if ((yi > y ^ yj > y) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
-		}
-		return inside;
-	}
-
-	function pointLineSegmentDistance(point, line) {
-		var v = line[0], w = line[1], d, t;
-		return Math.sqrt(pointPointSquaredDistance(point, (d = pointPointSquaredDistance(v, w))
-				? ((t = ((point[0] - v[0]) * (w[0] - v[0]) + (point[1] - v[1]) * (w[1] - v[1])) / d) < 0 ? v
-				: t > 1 ? w
-				: [v[0] + t * (w[0] - v[0]), v[1] + t * (w[1] - v[1])])
-				: v));
-	}
-
-	function pointPointSquaredDistance(v, w) {
-		var dx = v[0] - w[0], dy = v[1] - w[1];
-		return dx * dx + dy * dy;
-	}
-
+	
 });
