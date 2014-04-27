@@ -8,13 +8,13 @@ function boxesIntersect(box1, box2) {
 
 }
 
-function getHackBbox(svg, fontsize) {
+function getHackBbox(svg, fontsize, letter) {
 		// Hacky -- temporarily rendering a letter template to find it's rough fitting.
 		id = "test" + Math.floor((Math.random()*10000)+1);
-		console.log(id);
+		//console.log(id);
 		svg
 			.append("text")
-			.text("M")
+			.text(letter)
 			.attr("font-size", fontsize + "px")
 			.attr("x", Math.floor((Math.random()*200)+1))
 			.attr("y", Math.floor((Math.random()*200)+1))
@@ -22,9 +22,7 @@ function getHackBbox(svg, fontsize) {
 			.attr("id", id)
 		
 		test = svg.select("#" + id)
-		testBbox = test.node().getBBox()
-		console.log("Testing fontsize " + fontsize);
-		console.log(testBbox);
+		testBbox = test.node().getBBox();
 		test.remove();
 		return testBbox;
 }
@@ -53,11 +51,12 @@ function maxCoverageInSquare(svg, squareElement, square) {
 	
 	// Finding the max average fontSize
 	testFontSize = 50
-	testBbox = getHackBbox(svg, testFontSize)
+	testBbox = getHackBbox(svg, testFontSize, "M")
 	p = 0;
+	// Area
 	while(testBbox.width * testBbox.height < blockArea) {
 		testFontSize = testFontSize + 2;
-		testBBox = getHackBbox(svg, testFontSize)
+		testBbox = getHackBbox(svg, testFontSize, "M")
 		console.log(testBbox.width * testBbox.height + "/" + blockArea);
 		p++;
 		if (p > 50) {
@@ -65,8 +64,54 @@ function maxCoverageInSquare(svg, squareElement, square) {
 		}
 	}
 	console.log("got test font size as " + testFontSize)
-	square[3] = testFontSize;
-	placeGridInSquare(svg, squareElement, square);
+	//square[3] = testFontSize;
+	//placeGridInSquare(svg, squareElement, square);
+	
+	squareX = parseInt(squareElement.attr("x"));
+	squareY = parseInt(squareElement.attr("y"));
+	squareWidth = parseInt(squareElement.attr("width"));
+	squareHeight = parseInt(squareElement.attr("height"));
+	charHeight = testBbox.height;
+	charWidth = testBbox.width;
+
+	// console.log("Fitting");
+	//console.log(squareWidth + " " + charWidth);
+	//console.log(squareHeight + " " + charHeight);
+	colCount = parseInt(squareWidth/charWidth);
+	rowCount = parseInt(letterCount/colCount) + (letterCount % colCount > 0 ? 1 : 0);
+	padX = 0;//(squareWidth - colCount * charWidth) / 4;				
+	//console.log(padX);
+	index = 0;
+	xProgress = squareX;
+	yProgress = charHeight/1.5;
+	endX = squareX + squareWidth;
+	for (j = 0; j < letterCount; j++) {
+			curChar = word.substring(j, j + 1);
+			console.log(curChar);
+			letterId = "text" + square[0] + "-" + index;
+			//curHeight = j * charHeight;
+			//xTry =  parseInt(squareX) + padX + curWidth;
+			svg.append("text")
+				.text(curChar)
+				.attr("font-size", testFontSize + "px")
+				.attr("x", xProgress	)
+				// Why the extra shit on y
+				.attr("y", yProgress )
+				.attr("id", letterId);
+			
+			xProgress = xProgress + getHackBbox(svg, testFontSize, curChar).width;
+			if (xProgress + charWidth > endX) {
+					xProgress = squareX;
+					yProgress = yProgress + getHackBbox(svg, testFontSize, curChar).height;
+			}
+		
+		console.log(xProgress + " " + yProgress + " " + charWidth + " " + charHeight);
+		// Fine centering.
+		// toCenter = d3.select("#" + letterId);
+// 			curBox = toCenter.node().getBBox();
+// 			curPad = charWidth - curBox.width;
+// 			toCenter.attr("x", curPad > 0 ? curPad/2 + curBox.x : curBox.x );
+	}
 }
 
 function placeGridInSquare(svg, squareElement, square) {
@@ -79,10 +124,10 @@ function placeGridInSquare(svg, squareElement, square) {
 		// TODO Make variable
 		fontSize = square[3];
 		
-		testBbox = getHackBbox(svg, fontSize);	
+		testBbox = getHackBbox(svg, fontSize, "M");	
 		charHeight = testBbox.height;
 		charWidth = testBbox.width;
-		// TODO -- font+area based intelligence here.
+		
 		console.log("Fitting");
 		console.log(squareWidth + " " + charWidth);
 		console.log(squareHeight + " " + charHeight);
@@ -129,9 +174,9 @@ $(document).ready(function() {
 	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
 	var squares = [[0, "CALIFORNIA", "red", 87],
 			[1, "TEXAS", "turquoise", 120],
-			[2, "NEWYORK", "orange", 98], 
-			[3, "WASHINGTON", "pink", 93]
-		];
+ 			[2, "NEWYORK", "orange", 98], 
+ 			[3, "WASHINGTON", "pink", 93]
+ 	];
 
 	var width = 330;//($(window).width()/squares.length) - 5,
 		height = 330;
