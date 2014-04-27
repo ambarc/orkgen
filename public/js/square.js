@@ -22,13 +22,13 @@ function getFontSizeForAreaAndWord(area, word) {
 		.attr("font-size", 300) // hard coded to 300 as starting...
 		.attr("x",1)
 		.attr("y",1)
-		.attr("id","dummytext")
+		.attr("id","dummytext-tushar")
 		.text("M");
 	
 	// Get it back now, since it has definite properties set above...
-	var myChar = document.getElementsByTagName("text")[0];
+	var myChar = document.getElementById("dummytext-tushar");
 	for(var fontsize = 300; fontsize > 0; fontsize--) {
-		console.log(myChar.getComputedTextLength());
+		//console.log(myChar.getComputedTextLength()); //for debug only
 		if(myChar.getComputedTextLength() < squareWidthRounded) {
 			break;
 		}
@@ -36,7 +36,7 @@ function getFontSizeForAreaAndWord(area, word) {
 	}
 
 	// Get rid of hackish crap still in the DOM
-	var goAway = d3.select("#dummytext");
+	var goAway = d3.select("#dummytext-tushar");
 	goAway.remove();
 	//alert("Font size: " + fontsize);
 	return fontsize;
