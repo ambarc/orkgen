@@ -2,11 +2,21 @@ function SVG(tag) {
    return document.createElementNS('http://www.w3.org/2000/svg', tag);
 }
 
-function generateSvgTransform() {
-	
+function pointInPolygon(point, polygon) {
+  for (var n = polygon.length, i = 0, j = n - 1, x = point[0], y = point[1], inside = false; i < n; j = i++) {
+    var xi = polygon[i][0], yi = polygon[i][1],
+        xj = polygon[j][0], yj = polygon[j][1];
+    if ((yi > y ^ yj > y) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+  }
+  return inside;
 }
 
 function isInsideSvgElement(path, d, fontsize, idText) {
+
+}
+
+// Hacky as shit. Renders element in browser to get boxes.
+function isInsideSvgElementBBox(path, d, fontsize, idText) {
 if (true) { //(idText == "state20") {
 	console.log(idText);
 	console.log("bbox");
@@ -148,7 +158,7 @@ var g = svg.append("g");
 	y = centroid[1];
 	 return "translate(" + x + "," + y  + ")"; })
       .attr("id", function() { stateId3 = stateId3 + 1 ;return 'state'+ stateId3 })
-      .text(function(d) { stateId4 = stateId4 + 1 ;if (isInsideSvgElement(path, d, 15, "state" + stateId4)) {return 'state'+ stateId4} });
+      .text(function(d) { stateId4 = stateId4 + 1 ;if (isInsideSvgElementBBox(path, d, 15, "state" + stateId4)) {return 'state'+ stateId4} });
 
   g.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))

@@ -1,7 +1,13 @@
 $(document).ready(function() {
 
-	squares = [[0, "CALIFORNIA","red"],[1, "TEXAS", "green"],[2, "NEW YORK", "orange"], [3, "WASHINGTON", "pink"]];
-	//texts = ["CALIFORNIA", "TEXAS", "NEW YORK", "WASHINGTON"]
+	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
+	squares = [
+		[0, "CALIFORNIA","red"],
+		[1, "TEXAS", "green"],
+		[2, "NEW YORK", "orange"], 
+		[3, "WASHINGTON", "pink"]
+	];
+
 	
 		var width = ($(window).width()/squares.length) - 5,
 			height = 330;
@@ -9,7 +15,6 @@ $(document).ready(function() {
 	var svg = d3.select("body").append("svg")
 			.attr("width", width * squares.length)
 			.attr("height", height);
-			
 	
 		svg.selectAll("rect")
 			.data(squares)
@@ -22,6 +27,22 @@ $(document).ready(function() {
 			.attr("y", 0)
 			.attr("fill", function(d) { return d[2];})
 			.attr("id", function(d) { return d[1]; })
+				
+				
+		svg.selectAll("text")
+			.data(squares)
+			.enter()
+			.insert("text")
+			.text(function(d) {return d[1]})
+			.attr("fill", "white")
+			.attr("transform", function(d) {
+				x = (d[0] * width);//+ width/2;
+				y = width/2;
+				return "translate(" + x + "," + y + ")";
+			})
+			.attr("font-size", "70px")			
+			
+		
 			
 		
 	/*
