@@ -6,87 +6,18 @@ function boxesIntersect(box1, box2) {
 
 }
 
-
-var textElement;
-$(document).ready(function() {
-
-	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
-	squares = [[0, "CALIFORNIA", "red"]];
-		
-		/*
-		[1, "T", "green"],
-		[2, "NEW YORK", "orange"], 
-		[3, "WASHINGTON", "pink"]
-	];
-	*/
-
-	
-		var width = 330;//($(window).width()/squares.length) - 5,
-			height = 330;
-	
-	var svg = d3.select("body").append("svg")
-			.attr("width", width * squares.length)
-			.attr("height", height)
-			.attr("id", "container");
-	
-	
-		svg.selectAll("rect")
-			.data(squares)
-			.enter()
-			.insert("rect")
-			.attr("class", "square intersects")
-			.attr("width", width)
-			.attr("height", height)
-			.attr("x", function(d) { index = d[0]; return index * width; })
-			.attr("y", 0)
-			.attr("fill", function(d) { return d[2];})
-			.attr("id", function(d) { return "square" + d[0]})
-			/*
-		svg.selectAll("text")
-			.data(squares)
-			.enter()
-			.insert("text")
-			.text(function(d) {return d[1]})
-			.attr("fill", "white")
-			.attr("transform", function(d) {
-				x = (d[0] * width);//+ width/2;
-				y = width/2;
-				return "translate(" + x + "," + y + ")";
-			})
-			.attr("font-size", "70px")
-			.attr("id", function(d) {return "text" + d[0]})			
-	
-
-	// Remove the text that isn't being completely enclosed by the squares.
-	svg.selectAll("text")
-		.each(function(d, i) {
-			console.log(d);
-			console.log(i);
-			textElement = d3.select("#text"+d[0]);
-			squareElement = d3.select("#square"+d[0]);
-			console.log(textElement.node().getBBox())
-		});
-			
-		*/
-	
-	// TODO -- make this variable.
-	// TODO -- have a test generation stage for char sizes.
-	fontSize = 70;
-	for (i = 0; i < squares.length; i++) {
-		word = squares[0][1];
-		squareElement = $("#square"+i);
+function placeGridInSquare(svg, squareElement, square) {
+		word = square[1];
 		squareX = squareElement.attr("x");
 		squareY = squareElement.attr("y");
 		squareWidth = squareElement.attr("width");
 		squareHeight = squareElement.attr("height");
 		letterCount = word.length;		
 		
-		// Hacky -- temporarily rendering a letter template to find it's height.
-		svg.selectAll("text")
-			.data("T")
-			.enter()
+		// Hacky -- temporarily rendering a letter template to find it's rough fitting.
+		svg
 			.append("text")
-			.text("W")
+			.text("M")
 			.attr("font-size", fontSize + "px")
 			.style("opacity", "0.0")
 			.attr("id", "test")
@@ -96,8 +27,7 @@ $(document).ready(function() {
 		console.log(test);
 		console.log(testBbox);
 		test.remove();
-		// End of hack.
-		
+	
 		charHeight = testBbox.height;
 		charWidth = testBbox.width;
 		// TODO -- font+area based intelligence here.
@@ -106,8 +36,8 @@ $(document).ready(function() {
 		console.log(squareHeight + " " + charHeight);
 		colCount = parseInt(squareWidth/charWidth);
 		rowCount = parseInt(letterCount/colCount) + (letterCount % colCount > 0 ? 1 : 0);
-				
-		
+		padX = (squareWidth - colCount * charWidth) / 2;				
+		console.log(padX);
 		index = 0;
 		for (j = 0; j < rowCount; j++) {
 			// Place the words into the shape.
@@ -118,60 +48,68 @@ $(document).ready(function() {
 					curChar = word.substring(index, index + 1);
 					index++;
 					console.log(curChar);
-				}	
+				
+				letterId = "text" + square[0] + "-" + index;
 				curWidth =  k * charWidth;
 				curHeight = j * charHeight;
+				xTry =  parseInt(squareX) + padX + curWidth;
 				svg.append("text")
 					.text(curChar)
 					.attr("font-size", fontSize + "px")
-					.attr("x", curWidth)
+					.attr("x", xTry)
 					.attr("y", curHeight + 100)
-					
+					.attr("id", letterId);
+				}
+				// Fine centering.
+				toCenter = d3.select("#" + letterId);
+				curBox = toCenter.node().getBBox();
+				curPad = charWidth - curBox.width;
+				// toCenter.attr("x", curPad > 0 ? curPad/2 + curBox.x : curBox.x );
 			}
-			
-
-			
 		}
-	}	
-	/*
+}
 
-	var square = svg.append("rect")
-			.attr("class", "square intersects")
-			.datum(width)
-			.call(positionSquare)
-			.attr("width", width)
+
+var textElement;
+$(document).ready(function() {
+
+	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
+	squares = [[0, "CALIFORNIA", "red"],
+		[1, "TEXAS", "green"],
+		[2, "NEW YORK", "orange"], 
+		[3, "WASHINGTON", "pink"]
+	];
+	
+	var width = 330;//($(window).width()/squares.length) - 5,
+		height = 330;
+
+	var svg = d3.select("body").append("svg")
+			.attr("width", width * squares.length)
 			.attr("height", height)
-			*/
-			
-			/*
-
-	var polygon = svg.append("g")
-			.attr("class", "polygon")
-			.datum([[500, 300], [600, 300], [600, 400], [500, 400]]);
-
-	polygon.append("path")
-			.call(positionPath);
-
-	polygon.selectAll("circle")
-			.data(function(d) { return d; })
-		.enter().append("circle")
-			.call(positionCircle)
-			.attr("r", 4.5)
-			.call(d3.behavior.drag()
-				.origin(function(d) { return {x: d[0], y: d[1]}; })
-				.on("drag", function(d) {
-					d[0] = d3.event.x, d[1] = d3.event.y;
-					d3.select(this).call(positionCircle);
-					polygon.select("path").call(positionPath);
-					circle.classed("intersects", intersects(circle.datum(), polygon.datum()));
-				}));
-
-	function positionSquare(rect) {
-		rect
-				.attr("width", function(d) { return d[0]; })
-				.attr("height", function(d) { return d[1]; });
-	}
-	*/
+			.attr("id", "container");
+	
+	svg.selectAll("rect")
+		.data(squares)
+		.enter()
+		.insert("rect")
+		.attr("class", "square intersects")
+		.attr("width", width)
+		.attr("height", height)
+		.attr("x", function(d) { index = d[0]; return index * width; })
+		.attr("y", 0)
+		.attr("fill", function(d) { return d[2];})
+		.attr("id", function(d) { return "square" + d[0]})
+		
+	// TODO -- make this variable.
+	// TODO -- have a test generation stage for char sizes.
+	// TODO -- Group the letters together somehow.
+	// TODO -- Make bottom centering better.
+	// TODO -- More intelligent kerning.
+	fontSize = 87;
+	for (i = 0; i < squares.length; i++) {
+		squareElement = $("#square"+i);
+		placeGridInSquare(svg, squareElement, squares[i]);
+	}	
 
 	function positionPath(path) {
 		path
