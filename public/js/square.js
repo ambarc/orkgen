@@ -64,7 +64,7 @@ function placeGridInSquare(svg, squareElement, square) {
 				toCenter = d3.select("#" + letterId);
 				curBox = toCenter.node().getBBox();
 				curPad = charWidth - curBox.width;
-				// toCenter.attr("x", curPad > 0 ? curPad/2 + curBox.x : curBox.x );
+				toCenter.attr("x", curPad > 0 ? curPad/2 + curBox.x : curBox.x );
 			}
 		}
 }
@@ -75,7 +75,7 @@ $(document).ready(function() {
 
 	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
 	squares = [[0, "CALIFORNIA", "red"],
-		[1, "TEXAS", "green"],
+		[1, "TEXAS", "turquoise"],
 		[2, "NEW YORK", "orange"], 
 		[3, "WASHINGTON", "pink"]
 	];
