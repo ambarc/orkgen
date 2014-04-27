@@ -8,6 +8,46 @@ function boxesIntersect(box1, box2) {
 
 }
 
+function getFontSizeForAreaAndWord(area, word) {
+	// Strip whitespace and get length of that
+	var totalCharacters = word.replace(/ /g,'').length;
+	var areaPerCharacter = area / totalCharacters;
+	var squareWidth = Math.sqrt(areaPerCharacter);
+	var squareWidthRounded = Math.ceil(squareWidth);
+
+	// Create SVG to insert dummy text
+	// Since we know size of square, we don't actually need to insert it in DOM
+	var svgContainer = d3.select("body")
+		.append("svg")
+		.attr(squareWidthRounded+1)
+		.attr(squareWidthRounded+1)
+		.attr("id","dummycontainer-tushar");
+	var txt = svgContainer.append("text")
+		.attr("font-size", 300) // hard coded to 300 as starting...
+		.attr("x",1)
+		.attr("y",1)
+		.attr("id","dummytext-tushar")
+		.text("M");
+	
+	// Get it back now, since it has definite properties set above...
+	var myChar = document.getElementById("dummytext-tushar");
+	for(var fontsize = 300; fontsize > 0; fontsize--) {
+		//console.log(myChar.getComputedTextLength()); //for debug only
+		if(myChar.getComputedTextLength() < squareWidthRounded) {
+			break;
+		}
+		myChar.setAttributeNS(null, "font-size", fontsize);
+	}
+
+	// Get rid of hackish crap still in the DOM
+	var goAway = d3.select("#dummytext-tushar");
+	goAway.remove();
+	goAway = d3.select("#dummycontainer-tushar");
+	goAway.remove();
+	//alert("Font size: " + fontsize);
+	return fontsize;
+}
+
 function getHackBbox(svg, fontsize, letter) {
 		// Hacky -- temporarily rendering a letter template to find it's rough fitting.
 		id = "test" + Math.floor((Math.random()*10000)+1);
