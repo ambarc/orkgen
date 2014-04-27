@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<style>
+
+.circle {
+  fill: red;
+  fill-opacity: .3;
+}
+
+.circle.intersects {
+  fill: green;
+}
+
+.polygon path {
+  fill: #000;
+  fill-opacity: .3;
+}
+
+.polygon circle {
+  fill: #000;
+  stroke: #fff;
+  cursor: move;
+}
+
+</style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<svg width="100" height="100">
-<rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
-</svg>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="../js/jquery-1.11.0.min.js"></script>
+<script src="../js/square.js"></script>
+<script src="../js/raphael.js"></script>
 </body>
-
-<script>
-
-var svg = d3.select("svg");
-var text = svg.append("text")
-	.attr("x", "20")
-	.attr("y", "20")
-	.attr("fill", "red")
-	.attr("font-family", "sans-serif")
-	.attr("font-size", "20px")
-	.text("Hello");
-</script>
 </html>
