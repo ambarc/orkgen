@@ -1,5 +1,85 @@
-function generateSvgTransform() {
+function SVG(tag) {
+   return document.createElementNS('http://www.w3.org/2000/svg', tag);
 }
+
+function generateSvgTransform() {
+	
+}
+
+function isInsideSvgElement(path, d, fontsize, idText) {
+if (true) { //(idText == "state20") {
+	console.log(idText);
+	console.log("bbox");
+	console.log(path.bounds(d));
+	bbox = path.bounds(d)
+	bX1 = bbox[0][0];
+	bY1 = bbox[0][1];
+	bX2 = bbox[1][0];
+	bY2 = bbox[1][1];
+	console.log("centroid:");
+	console.log(path.centroid(d));
+	text = SVG("svg:text")
+	
+	$(text)
+		.attr("text", idText)
+		.attr("font-size", fontsize + "px")
+		.attr("transform", "translate(" + path.centroid(d) + ")")
+		.attr("id", "random")
+	 
+	$(text).html(idText);
+	
+	$("#states").append(text);
+
+	//text.style.visibility = "hidden";
+	liveText = d3.select("#random")
+	textBox = liveText.node().getBBox();//getBoundingClientRect();
+	console.log("live text box")
+	console.log(textBox);
+	rect = SVG("svg:rect")
+	
+	$(rect)
+	  .attr("x", path.centroid(d)[0])
+    .attr("y", path.centroid(d)[1] - textBox.height)
+    .attr("width", textBox.width)
+    .attr("height", textBox.height)
+    rect.style.fill = "#ccc"
+    
+    
+  bigRect  = SVG("svg:rect")
+	
+	$(bigRect)
+	  .attr("x", bbox[0][0])
+    .attr("y", bbox[0][1])
+    .attr("width", bbox[1][0] - bbox[0][0] )
+    .attr("height", bbox[1][1] - bbox[0][1]  )
+    bigRect.style.fill = "#fff"
+  
+
+	//$("#states").append(rect); 
+	//$("#states").append(bigRect); 
+	
+  d3.select(d).style.fill ="#fff"
+  console.log("bigrect")
+  console.log(bigRect)
+
+	 
+	isIn = path.centroid(d)[0] >= bX1 &&
+  	path.centroid(d)[0] + textBox.width <= bX2 &&
+  	path.centroid(d)[1] >= bY1 &&
+  	path.centroid(d)[1] + textBox.height <= bY2;
+  console.log(isIn);
+	
+//   if (isIn) {
+//   	$(text).attr("fill", "red");
+//   } else {
+//  		$(text).attr("fill", "white");
+//   }
+	$("#random").remove()
+  return isIn;
+  }
+}
+
+
 
 $(document).ready(function() {
 // javascript
@@ -15,6 +95,8 @@ var projection = d3.geo.albersUsa()
 var path = d3.geo.path()
     .projection(projection);
 
+console.log(path);
+
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
@@ -25,10 +107,12 @@ svg.append("rect")
     .attr("height", height)
     .on("click", clicked);
 
+// TODO - Figure out how not to do this.
 stateId = 0;
 dumbStateId = 0;
 stateId3 = 0;
 stateId4 = 0;
+stateId5 = 0;
 
 var g = svg.append("g");
 
@@ -49,10 +133,10 @@ var g = svg.append("g");
   .data(topojson.feature(us, us.objects.states).features)
   .enter()
   .append("text")
-     	.attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+     	.attr("transform", function(d) {stateId5 = stateId5 + 1; state = isInsideSvgElement(path, d, 15, "state" + stateId5);return "translate(" + path.centroid(d) + ")"; })
+     	.attr("font-size", "15px")
       .attr("id", function() { stateId3 = stateId3 + 1 ;return 'state'+ stateId3 })
-      //.attr("dy", ".35em")
-      .text(function() { stateId4 = stateId4 + 1 ;return 'state'+ stateId4 });
+      .text(function(d) { stateId4 = stateId4 + 1 ;if (isInsideSvgElement(path, d, 15, "state" + stateId4)) {return 'state'+ stateId4} });
 
   g.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
