@@ -145,7 +145,7 @@ var g = svg.append("g");
      	.attr("transform", function(d) {
 	var centroid = path.centroid(d);
 	x = centroid[0] - 20;
-	y = centroid[1] - 20;
+	y = centroid[1];
 	 return "translate(" + x + "," + y  + ")"; })
       .attr("id", function() { stateId3 = stateId3 + 1 ;return 'state'+ stateId3 })
       .text(function(d) { stateId4 = stateId4 + 1 ;if (isInsideSvgElement(path, d, 15, "state" + stateId4)) {return 'state'+ stateId4} });
