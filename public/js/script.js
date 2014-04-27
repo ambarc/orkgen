@@ -35,7 +35,8 @@ if (true) { //(idText == "state20") {
 		.attr("font-size", fontsize + "px")
 		.attr("transform", "translate(" + path.centroid(d) + ")")
 		.attr("id", "random")
-	 
+	 	.attr("fill", "red")
+
 	$(text).html(idText);
 	
 	$("#states").append(text);
@@ -131,6 +132,62 @@ stateId3 = 0;
 stateId4 = 0;
 stateId5 = 0;
 
+//map state id to state name
+var stateMap = new Array();
+
+stateMap[0] = "";
+stateMap[1] = "Washington";
+stateMap[2] = "Montana";
+stateMap[3] = "Idaho";
+stateMap[4] = "North Dakota";
+stateMap[5] = "Montana";
+stateMap[6] = "Maine";
+stateMap[7] = "Michigan";
+stateMap[8] = "Wisconsin";
+stateMap[9] = "Oregon";
+stateMap[10] = "South Dakota";
+stateMap[11] = "New Hampshire";
+stateMap[12] = "Vermont";
+stateMap[13] = "New York";
+stateMap[14] = "Wyoming";
+stateMap[15] = "Iowa";
+stateMap[16] = "Nebraska";
+stateMap[17] = "Massachusetts";
+stateMap[18] = "Illinois";
+stateMap[19] = "Pennsylvania";
+stateMap[20] = "Connecticut";
+stateMap[21] = "Rhode Island";
+stateMap[22] = "California";
+stateMap[23] = "Utah";
+stateMap[24] = "Nevada";
+stateMap[25] = "Ohio";
+stateMap[26] = "Indiana";
+stateMap[27] = "New Jersey";
+stateMap[28] = "Colorado";
+stateMap[29] = "West Virginia";
+stateMap[30] = "Missouri";
+stateMap[31] = "Kansas";
+stateMap[32] = "Delaware";
+stateMap[33] = "";
+stateMap[34] = "Virginia";
+stateMap[35] = "Kentucky";
+stateMap[36] = "Maryland";
+stateMap[37] = "Arizona";
+stateMap[38] = "Oklahoma";
+stateMap[39] = "Montana";
+stateMap[40] = "Tennessee";
+stateMap[41] = "North Carolina";
+stateMap[42] = "Texas";
+stateMap[43] = "Arkansas";
+stateMap[44] = "South Carolina";
+stateMap[45] = "Alabama";
+stateMap[46] = "Georgia";
+stateMap[47] = "Mississippi";
+stateMap[48] = "Louisiana";
+stateMap[49] = "Florida";
+stateMap[50] = "Hawaii";
+stateMap[51] = "Alaska";
+
 var g = svg.append("g");
 
   g.append("g")
@@ -158,7 +215,9 @@ var g = svg.append("g");
 	y = centroid[1];
 	 return "translate(" + x + "," + y  + ")"; })
       .attr("id", function() { stateId3 = stateId3 + 1 ;return 'state'+ stateId3 })
-      .text(function(d) { stateId4 = stateId4 + 1 ;if (isInsideSvgElementBBox(path, d, 15, "state" + stateId4)) {return 'state'+ stateId4} });
+      .text(function(d) { stateId4 = stateId4 + 1 ;
+//	if (isInsideSvgElement(path, d, 15, "state" + stateId4))
+	 {return  stateMap[stateId4]} });
 
   g.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
