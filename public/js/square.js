@@ -1,20 +1,34 @@
+function getBoundingBox(d3Text) {
+	
+}
+
+function boxesIntersect(box1, box2) {
+
+}
+
+
+var textElement;
 $(document).ready(function() {
 
 	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
-	squares = [
-		[0, "CALIFORNIA","red"],
-		[1, "TEXAS", "green"],
+	squares = [[0, "CALIFORNIA", "red"]];
+		
+		/*
+		[1, "T", "green"],
 		[2, "NEW YORK", "orange"], 
 		[3, "WASHINGTON", "pink"]
 	];
+	*/
 
 	
-		var width = ($(window).width()/squares.length) - 5,
+		var width = 330;//($(window).width()/squares.length) - 5,
 			height = 330;
 	
 	var svg = d3.select("body").append("svg")
 			.attr("width", width * squares.length)
-			.attr("height", height);
+			.attr("height", height)
+			.attr("id", "container");
+	
 	
 		svg.selectAll("rect")
 			.data(squares)
@@ -26,9 +40,8 @@ $(document).ready(function() {
 			.attr("x", function(d) { index = d[0]; return index * width; })
 			.attr("y", 0)
 			.attr("fill", function(d) { return d[2];})
-			.attr("id", function(d) { return d[1]; })
-				
-				
+			.attr("id", function(d) { return "square" + d[0]})
+			/*
 		svg.selectAll("text")
 			.data(squares)
 			.enter()
@@ -40,11 +53,86 @@ $(document).ready(function() {
 				y = width/2;
 				return "translate(" + x + "," + y + ")";
 			})
-			.attr("font-size", "70px")			
+			.attr("font-size", "70px")
+			.attr("id", function(d) {return "text" + d[0]})			
+	
+
+	// Remove the text that isn't being completely enclosed by the squares.
+	svg.selectAll("text")
+		.each(function(d, i) {
+			console.log(d);
+			console.log(i);
+			textElement = d3.select("#text"+d[0]);
+			squareElement = d3.select("#square"+d[0]);
+			console.log(textElement.node().getBBox())
+		});
 			
+		*/
+	
+	// TODO -- make this variable.
+	// TODO -- have a test generation stage for char sizes.
+	fontSize = 70;
+	for (i = 0; i < squares.length; i++) {
+		word = squares[0][1];
+		squareElement = $("#square"+i);
+		squareX = squareElement.attr("x");
+		squareY = squareElement.attr("y");
+		squareWidth = squareElement.attr("width");
+		squareHeight = squareElement.attr("height");
+		letterCount = word.length;		
 		
+		// Hacky -- temporarily rendering a letter template to find it's height.
+		svg.selectAll("text")
+			.data("T")
+			.enter()
+			.append("text")
+			.text("W")
+			.attr("font-size", fontSize + "px")
+			.style("opacity", "0.0")
+			.attr("id", "test")
+		
+		test = svg.select("#test")
+		testBbox = test.node().getBBox()
+		console.log(test);
+		console.log(testBbox);
+		test.remove();
+		// End of hack.
+		
+		charHeight = testBbox.height;
+		charWidth = testBbox.width;
+		// TODO -- font+area based intelligence here.
+		console.log("Fitting");
+		console.log(squareWidth + " " + charWidth);
+		console.log(squareHeight + " " + charHeight);
+		colCount = parseInt(squareWidth/charWidth);
+		rowCount = parseInt(letterCount/colCount) + (letterCount % colCount > 0 ? 1 : 0);
+				
+		
+		index = 0;
+		for (j = 0; j < rowCount; j++) {
+			// Place the words into the shape.
+			for (k = 0; k < colCount; k++) {
+				//console.log(rowCount + " " + colCount + " " + j + " " + k);
+				//console.log(index);
+				if (index < letterCount) {
+					curChar = word.substring(index, index + 1);
+					index++;
+					console.log(curChar);
+				}	
+				curWidth =  k * charWidth;
+				curHeight = j * charHeight;
+				svg.append("text")
+					.text(curChar)
+					.attr("font-size", fontSize + "px")
+					.attr("x", curWidth)
+					.attr("y", curHeight + 100)
+					
+			}
 			
-		
+
+			
+		}
+	}	
 	/*
 
 	var square = svg.append("rect")
