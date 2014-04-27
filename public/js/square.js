@@ -1,3 +1,10 @@
+// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
+var squares = [[0, "CALIFORNIA", "red", 87], 
+		[1, "TEXAS", "turquoise", 120],
+		[2, "NEWYORK", "orange", 95], 
+		[3, "WASHINGTON", "pink", 93]
+	];
+
 function getBoundingBox(d3Text) {
 	
 }
@@ -13,6 +20,8 @@ function placeGridInSquare(svg, squareElement, square) {
 		squareWidth = squareElement.attr("width");
 		squareHeight = squareElement.attr("height");
 		letterCount = word.length;		
+		// TODO Make variable
+		fontSize = square[3];
 		
 		// Hacky -- temporarily rendering a letter template to find it's rough fitting.
 		svg
@@ -46,25 +55,27 @@ function placeGridInSquare(svg, squareElement, square) {
 				//console.log(index);
 				if (index < letterCount) {
 					curChar = word.substring(index, index + 1);
-					index++;
+		
 					console.log(curChar);
+			
+					letterId = "text" + square[0] + "-" + index;
+					curWidth =  k * charWidth;
+					curHeight = j * charHeight;
+					xTry =  parseInt(squareX) + padX + curWidth;
+					svg.append("text")
+						.text(curChar)
+						.attr("font-size", fontSize + "px")
+						.attr("x", xTry)
+						.attr("y", curHeight + 100)
+						.attr("id", letterId);
+					}
+					// Fine centering.
+					toCenter = d3.select("#" + letterId);
+					curBox = toCenter.node().getBBox();
+					curPad = charWidth - curBox.width;
+					toCenter.attr("x", curPad > 0 ? curPad/2 + curBox.x : curBox.x );
 				
-				letterId = "text" + square[0] + "-" + index;
-				curWidth =  k * charWidth;
-				curHeight = j * charHeight;
-				xTry =  parseInt(squareX) + padX + curWidth;
-				svg.append("text")
-					.text(curChar)
-					.attr("font-size", fontSize + "px")
-					.attr("x", xTry)
-					.attr("y", curHeight + 100)
-					.attr("id", letterId);
-				}
-				// Fine centering.
-				toCenter = d3.select("#" + letterId);
-				curBox = toCenter.node().getBBox();
-				curPad = charWidth - curBox.width;
-				toCenter.attr("x", curPad > 0 ? curPad/2 + curBox.x : curBox.x );
+				index++;
 			}
 		}
 }
@@ -73,12 +84,7 @@ function placeGridInSquare(svg, squareElement, square) {
 var textElement;
 $(document).ready(function() {
 
-	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
-	squares = [[0, "CALIFORNIA", "red"],
-		[1, "TEXAS", "turquoise"],
-		[2, "NEW YORK", "orange"], 
-		[3, "WASHINGTON", "pink"]
-	];
+
 	
 	var width = 330;//($(window).width()/squares.length) - 5,
 		height = 330;
@@ -105,7 +111,7 @@ $(document).ready(function() {
 	// TODO -- Group the letters together somehow.
 	// TODO -- Make bottom centering better.
 	// TODO -- More intelligent kerning.
-	fontSize = 87;
+	
 	for (i = 0; i < squares.length; i++) {
 		squareElement = $("#square"+i);
 		placeGridInSquare(svg, squareElement, squares[i]);
