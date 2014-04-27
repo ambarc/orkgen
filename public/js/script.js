@@ -56,7 +56,11 @@ var g = svg.append("g");
   .data(topojson.feature(us, us.objects.states).features)
   .enter()
   .append("text")
-     	.attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+     	.attr("transform", function(d) {
+	var centroid = path.centroid(d);
+	x = centroid[0] - 20;
+	y = centroid[1] - 20;
+	 return "translate(" + x + "," + y  + ")"; })
       .attr("id", function() { stateId3 = stateId3 + 1 ;return 'state'+ stateId3 })
       //.attr("dy", ".35em")
       .text(function() { stateId4 = stateId4 + 1 ;return 'state'+ stateId4 });
@@ -70,14 +74,11 @@ var g = svg.append("g");
 
 function clicked(d) {
   var x, y, k;
-  console.log(d)
-  console.log(g)
-  console.log(path.centriod)
   
   if (d && centered !== d) {
     var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
+    x = centroid[0]  -  25;
+    y = centroid[1]  -  25;
     k = 4;
     centered = d;
   } else {
