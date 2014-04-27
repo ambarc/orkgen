@@ -25,7 +25,8 @@ if (true) { //(idText == "state20") {
 		.attr("font-size", fontsize + "px")
 		.attr("transform", "translate(" + path.centroid(d) + ")")
 		.attr("id", "random")
-	 	.attr("font color", blue)
+	 	.attr("fill", "red")
+
 	$(text).html(idText);
 	
 	$("#states").append(text);
