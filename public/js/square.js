@@ -10,16 +10,20 @@ function boxesIntersect(box1, box2) {
 
 function getHackBbox(svg, fontsize) {
 		// Hacky -- temporarily rendering a letter template to find it's rough fitting.
+		id = "test" + Math.floor((Math.random()*10000)+1);
+		console.log(id);
 		svg
 			.append("text")
 			.text("M")
-			.attr("font-size", fontSize + "px")
-			.style("opacity", "0.0")
-			.attr("id", "test")
+			.attr("font-size", fontsize + "px")
+			.attr("x", Math.floor((Math.random()*200)+1))
+			.attr("y", Math.floor((Math.random()*200)+1))
+			.style("opacity", "1.0")
+			.attr("id", id)
 		
-		test = svg.select("#test")
+		test = svg.select("#" + id)
 		testBbox = test.node().getBBox()
-		console.log(test);
+		console.log("Testing fontsize " + fontsize);
 		console.log(testBbox);
 		test.remove();
 		return testBbox;
@@ -46,6 +50,23 @@ function maxCoverageInSquare(svg, squareElement, square) {
 	console.log("Total Available Area is " + squareArea)
 	console.log("Single block Area is " + blockArea)
 	console.log("Block Cumulative Area is " + blockArea * letterCount)
+	
+	// Finding the max average fontSize
+	testFontSize = 50
+	testBbox = getHackBbox(svg, testFontSize)
+	p = 0;
+	while(testBbox.width * testBbox.height < blockArea) {
+		testFontSize = testFontSize + 2;
+		testBBox = getHackBbox(svg, testFontSize)
+		console.log(testBbox.width * testBbox.height + "/" + blockArea);
+		p++;
+		if (p > 50) {
+			break;
+		}
+	}
+	console.log("got test font size as " + testFontSize)
+	square[3] = testFontSize;
+	placeGridInSquare(svg, squareElement, square);
 }
 
 function placeGridInSquare(svg, squareElement, square) {
@@ -106,7 +127,7 @@ function placeGridInSquare(svg, squareElement, square) {
 var textElement;
 $(document).ready(function() {
 	// Index, Name, Shape Color, Translation lists, Rotation lists, scaling lists
-	var squares = [[0, "CALIFORNIA", "red", 87], 
+	var squares = [[0, "CALIFORNIA", "red", 87],
 			[1, "TEXAS", "turquoise", 120],
 			[2, "NEWYORK", "orange", 98], 
 			[3, "WASHINGTON", "pink", 93]
@@ -116,8 +137,8 @@ $(document).ready(function() {
 		height = 330;
 
 	var svg = d3.select("body").append("svg")
-			.attr("width", width * squares.length)
-			.attr("height", height)
+			.attr("width", width * 1000)// squares.length)
+			.attr("height", height * 1000)
 			.attr("id", "container");
 	
 	svg.selectAll("rect")
@@ -140,7 +161,7 @@ $(document).ready(function() {
 	
 	for (i = 0; i < squares.length; i++) {
 		squareElement = $("#square"+i);
-		placeGridInSquare(svg, squareElement, squares[i]);
+		//placeGridInSquare(svg, squareElement, squares[i]);
 		maxCoverageInSquare(svg, squareElement, squares[i]);
 	}	
 
