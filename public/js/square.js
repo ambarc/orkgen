@@ -17,7 +17,11 @@ function getFontSizeForAreaAndWord(area, word) {
 
 	// Create SVG to insert dummy text
 	// Since we know size of square, we don't actually need to insert it in DOM
-	var svgContainer = d3.select("body").append("svg").attr(squareWidthRounded+1).attr(squareWidthRounded+1);
+	var svgContainer = d3.select("body")
+		.append("svg")
+		.attr(squareWidthRounded+1)
+		.attr(squareWidthRounded+1)
+		.attr("id","dummycontainer-tushar");
 	var txt = svgContainer.append("text")
 		.attr("font-size", 300) // hard coded to 300 as starting...
 		.attr("x",1)
@@ -37,6 +41,8 @@ function getFontSizeForAreaAndWord(area, word) {
 
 	// Get rid of hackish crap still in the DOM
 	var goAway = d3.select("#dummytext-tushar");
+	goAway.remove();
+	goAway = d3.select("#dummycontainer-tushar");
 	goAway.remove();
 	//alert("Font size: " + fontsize);
 	return fontsize;
