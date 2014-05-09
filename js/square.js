@@ -131,13 +131,26 @@ function maxCoverageInSquare(svg, squareElement, square) {
 			letterId = "text" + square[0] + "-" + index;
 			//curHeight = j * charHeight;
 			//xTry =  parseInt(squareX) + padX + curWidth;
-			svg.append("text")
+			var charElem = svg.append("text")
 				.text(curChar)
 				.attr("font-size", testFontSize + "px")
 				.attr("x", xProgress	)
 				// Why the extra shit on y
 				.attr("y", yProgress )
 				.attr("id", letterId);
+
+      var charBBox = charElem.node().getBBox();
+
+      var rect = svg.append("svg:rect")
+        .attr("x", charBBox.x)
+        .attr("y", charBBox.y)
+        .attr("width", charBBox.width)
+        .attr("height", charBBox.height)
+        .style("fill", "#ccc")
+        .style("fill-opacity", ".3")
+        .style("stroke", "#666")
+        .style("stroke-width", "1.5px");
+
 			
 			xProgress = xProgress + getHackBbox(svg, testFontSize, curChar).width;
 			if (xProgress + charWidth > endX) {
